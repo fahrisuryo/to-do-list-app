@@ -30,6 +30,10 @@ To get a local copy up and running, follow these simple steps:
 3. **Open index.html in your web browser**:
    You can simply double-click the index.html file or use a local server.
 
+## Preview
+
+![Image](https://github.com/user-attachments/assets/f4b40725-8c1c-4ab2-a748-0f1b06a61abb)
+
 ## How to Use
 
 1. Enter a task in the input field and click the "Save" button to add it to your list.
