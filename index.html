@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>TO DO LIST</h1>
+        <input type="text" id="taskInput" placeholder="Insert to-do list" />
+        <button id="saveButton">Save</button>
+
+        <div class="stats">
+            <p>Todo Done: <span id="completedCount">0</span></p>
+            <p>Todo On Progress: <span id="pendingCount">0</span></p>
+        </div>
+
+        <input type="text" id="searchInput" placeholder="Search..." />
+
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        const taskInput = document.getElementById('taskInput');
+        const saveButton = document.getElementById('saveButton');
+        const taskList = document.getElementById('taskList');
+        const searchInput = document.getElementById('searchInput');
+        const completedCount = document.getElementById('completedCount');
+        const pendingCount = document.getElementById('pendingCount');
+
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        function renderTasks(filter = '') {
+            taskList.innerHTML = '';
+            const filteredTasks = tasks.filter(task => task.text.toLowerCase().includes(filter.toLowerCase()));
+            filteredTasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleComplete(${index})" />
+                    <span class="${task.completed ? 'completed' : ''}">${task.text}</span>
+                    <button onclick="editTask(${index})">Edit</button>
+                    <button onclick="deleteTask(${index})">Delete</button>
+                `;
+                taskList.appendChild(li);
+            });
+            updateCounts();
+        }
+
+        function updateCounts() {
+            const completed = tasks.filter(task => task.completed).length;
+            const pending = tasks.length - completed;
+            completedCount.innerText = completed;
+            pendingCount.innerText = pending;
+        }
+
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            if (taskText) {
+                tasks.push({ text: taskText, completed: false });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                taskInput.value = '';
+                renderTasks();
+            }
+        }
+
+        function toggleComplete(index) {
+            tasks[index].completed = !tasks[index].completed;
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function editTask(index) {
+            const newTaskText = prompt('Edit task:', tasks[index].text);
+            if (newTaskText !== null) {
+                tasks[index].text = newTaskText.trim();
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                renderTasks();
+            }
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        saveButton.addEventListener('click', addTask);
+        searchInput.addEventListener('input', () => renderTasks(searchInput.value));
+        window.onload = () => renderTasks();
+    </script>
+</body>
+</html>
